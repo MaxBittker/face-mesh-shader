@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/shader-reload-cli index.js:bundle.js --dir dist/ --cors",
+    "start": "./node_modules/.bin/shader-reload-cli index.js:bundle.js --dir docs/ --cors",
     "build": "./node_modules/.bin/browserify -t glslify -g uglifyify index.js -o docs/bundle.js"
   },
   "author": "maxbittker <maxbittker@gmail.com> (maxbittker.github.io)",
@@ -15,7 +15,6 @@
     "@tensorflow/tfjs-core": "^1.7.0",
     "bottom-tip": "^0.0.4",
     "browserify": "^16.2.0",
-    "bunny": "^1.0.1",
     "ccapture.js": "^1.1.0",
     "convex-hull": "^1.0.3",
     "getusermedia": "^2.0.1",
