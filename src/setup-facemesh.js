@@ -47,7 +47,8 @@ function setupWebcam(options) {
   function startup() {
     video = document.getElementById("video");
     let startbutton = document.getElementById("start");
-
+    let paint = document.getElementById("paint");
+    let target = document.getElementById("target");
     var trackingStarted = false;
 
     function tryGetUserMedia() {
@@ -60,7 +61,7 @@ function setupWebcam(options) {
         .catch(e => {
           console.log("initial gum failed");
         });
-      video.play();
+      // video.play();
       startbutton.hidden = true;
     }
 
@@ -88,8 +89,10 @@ function setupWebcam(options) {
         var h = videoHeight;
         video.height = h;
         video.width = w;
-        // main();
-
+        paint.height = h;
+        paint.width = w;
+        target.height = h;
+        target.width = w;
         predictionLoop();
 
         regl.frame(() => webcam.subimage(video));

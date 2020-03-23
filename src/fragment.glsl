@@ -3,6 +3,7 @@ uniform float t;
 uniform vec2 resolution;
 uniform sampler2D backBuffer;
 uniform sampler2D webcam;
+uniform sampler2D faceDetection;
 uniform vec2 videoResolution;
 uniform vec2 scaledVideoResolution;
 // uniform vec2 eyes[2];
@@ -32,7 +33,13 @@ void main() {
   vec2 flipwcord = vec2(1.) - webcamCoord;
 
   vec3 webcamColor = texture2D(webcam, flipwcord).rgb;
-  vec3 backBufferColor = texture2D(backBuffer, uvN).rgb;
-
-  gl_FragColor = vec4(webcamColor, 1);
+  // vec3 backBufferColor = texture2D(backBuffer, flipwcord).rgb;
+  vec4 facePaintColor = texture2D(faceDetection, flipwcord).rgba;
+  vec3 color = webcamColor;
+  if (facePaintColor.a > 0.5) {
+    color = facePaintColor.rgb;
+  }
+  color = facePaintColor.rgb + webcamColor;
+  ;
+  gl_FragColor = vec4(color, 1);
 }
