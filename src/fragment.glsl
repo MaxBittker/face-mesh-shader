@@ -41,25 +41,26 @@ void main() {
 
   vec3 backBufferColor = texture2D(backBuffer, backCoord).rgb;
   vec4 facePaintColor = texture2D(faceDetection, flipwcord).rgba;
-  vec3 color = backBufferColor;
+  vec3 color = webcamColor;
 
   float face = facePaintColor.b;
   float eye = facePaintColor.g;
   float mouth = facePaintColor.r;
-  color = webcamColor * 0.5 + facePaintColor.rgb * 0.5;
-  color = webcamColor * 0.8 + facePaintColor.rgb * 0.5;
+  // color = webcamColor * 0.5 + facePaintColor.rgb * 0.5;
+  // color = webcamColor * 0.8 + facePaintColor.rgb * 0.5;
 
-  // if (face < 0.3) {
-  //   // color = facePaintColor.rgb;
-  //   color = webcamColor;
-  // }
+  if (face > 0.3) {
+    color = webcamColor * 0.2 + facePaintColor.rgb * 0.8;
+
+    //   color = webcamColor;
+  }
   // if (eye > 0.4) {
   //   // color = webcamColor;
 
   //   // color = vec3(1.0, 0., 0.) + webcamColor;
   // }
   if (mouth > 0.6) {
-    color = webcamColor;
+    // color = webcamColor;
   }
   // // color = facePaintColor.rgb + webcamColor;
   if (!hasFace) {
