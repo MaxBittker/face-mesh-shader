@@ -8,6 +8,7 @@ async function loadModel() {
   model = await facemesh.load({ maxFaces: 1 });
 }
 let keypoints;
+let dirty = false;
 async function predictionLoop() {
   if (!model || !video) {
     window.requestAnimationFrame(predictionLoop);
@@ -21,24 +22,24 @@ async function predictionLoop() {
   // console.log(tf.backend());
   // console.log(model);
   // console.log(facemesh);
-  // debugger;
   if (predictions.length > 0) {
     for (let i = 0; i < predictions.length; i++) {
-      // console.log(predictions[i].annotations);
-      keypoints = predictions[i].scaledMesh;
-
-      // Log facial keypoints.
-      for (let i = 0; i < keypoints.length; i++) {
-        const [x, y, z] = keypoints[i];
-
-        // console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
-      }
+      keypoints = predictions[i].annotations;
+      dirty = true;
+      // console.log(keypoints);
+      // keypoints = predictions[i].scaledMesh;
     }
   }
   window.requestAnimationFrame(predictionLoop);
 }
 function getKeyPoints() {
-  return keypoints;
+  if (dirty) {
+    dirty = false;
+    return keypoints;
+  } else {
+    // console.log("saved work");
+    return false;
+  }
 }
 loadModel();
 function setupWebcam(options) {
@@ -113,11 +114,6 @@ function setupWebcam(options) {
     // }
     video.onresize = function() {
       // adjustVideoProportions();
-      // if (trackingStarted) {
-      // ctracker.stop();
-      // ctracker.reset();
-      // ctracker.start(video);
-      // }
     };
     video.addEventListener(
       "canplay",

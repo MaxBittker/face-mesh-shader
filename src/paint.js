@@ -1,47 +1,137 @@
-let { TRIANGULATION } = require("./triangulation");
-
+// let { TRIANGULATION } = require("./triangulation");
+let hull = require("hull.js");
 let canvas = document.getElementById("paint");
-console.log(canvas);
-
-function drawPath(ctx, points, closePath) {
-  const region = new Path2D();
-  region.moveTo(points[0][0], points[0][1]);
-  for (let i = 1; i < points.length; i++) {
-    const point = points[i];
-    region.lineTo(point[0], point[1]);
-  }
-
-  if (closePath) {
-    region.closePath();
-  }
-  ctx.stroke(region);
-}
 
 ctx = canvas.getContext("2d");
-// ctx.translate(canvas.width, 0);
-// ctx.scale(-1, 1);
-
 ctx.translate(canvas.width, 0);
 ctx.scale(-1, 1);
-function paintFace(keypoints) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // ctx.fillStyle = "#ffaa9B";
 
-  // ctx.fillRect(20, 20, 200, 250);
+function drawShape(points) {
+  ctx.beginPath();
 
-  ctx.fillStyle = "#52aa9B";
-  ctx.strokeStyle = "#52aa9B";
-  // console.log(keypoints.length);
-  for (let i = 0; i < keypoints.length; i++) {
-    const x = keypoints[i][0];
-    const y = keypoints[i][1];
+  for (let i = 0; i < points.length; i++) {
+    const x = points[i][0];
+    const y = points[i][1];
 
-    ctx.beginPath();
-
-    ctx.lineWidth = 0.5;
-    ctx.arc(x, y, 1 /* radius */, 0, 2 * Math.PI);
-    ctx.fill();
+    if (i == 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
   }
+
+  ctx.closePath();
+  ctx.fill();
+}
+function paintFace(annotations) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  let silhouette = annotations["silhouette"];
+  let convexsilhouette = hull(silhouette, 1000);
+  ctx.fillStyle = `#008`;
+  drawShape(convexsilhouette);
+
+  let leftEyebrow = [
+    ...annotations["leftEyebrowLower"],
+    ...annotations["leftEyebrowUpper"]
+  ];
+
+  let rightEyebrow = [
+    ...annotations["rightEyebrowLower"],
+    ...annotations["rightEyebrowUpper"]
+  ];
+
+  ctx.fillStyle = `#048`;
+  drawShape(hull(leftEyebrow, 1000));
+  drawShape(hull(rightEyebrow, 1000));
+
+  let leftEye2 = [
+    ...annotations["leftEyeLower2"],
+    ...annotations["leftEyeUpper2"]
+  ];
+
+  let rightEye2 = [
+    ...annotations["rightEyeLower2"],
+    ...annotations["rightEyeUpper2"]
+  ];
+  ctx.fillStyle = `#088`;
+  drawShape(hull(leftEye2, 1000));
+  drawShape(hull(rightEye2, 1000));
+
+  let leftEye1 = [
+    ...annotations["leftEyeLower1"],
+    ...annotations["leftEyeUpper1"]
+  ];
+
+  let rightEye1 = [
+    ...annotations["rightEyeLower1"],
+    ...annotations["rightEyeUpper1"]
+  ];
+  ctx.fillStyle = `#0C8`;
+  drawShape(hull(leftEye1, 1000));
+  drawShape(hull(rightEye1, 1000));
+
+  let leftEye0 = [
+    ...annotations["leftEyeLower0"],
+    ...annotations["leftEyeUpper0"]
+  ];
+
+  let rightEye0 = [
+    ...annotations["rightEyeLower0"],
+    ...annotations["rightEyeUpper0"]
+  ];
+  ctx.fillStyle = `#0f8`;
+  drawShape(hull(leftEye0, 1000));
+  drawShape(hull(rightEye0, 1000));
+
+  let outerMouth = [
+    ...annotations["lipsUpperOuter"],
+    ...annotations["lipsLowerOuter"]
+  ];
+  ctx.fillStyle = `#808`;
+  let outerMouthHull = hull(outerMouth, 1000);
+  drawShape(outerMouthHull);
+
+  let innerMouth = [
+    ...annotations["lipsUpperInner"],
+    ...annotations["lipsLowerInner"]
+  ];
+  ctx.fillStyle = `#F08`;
+  let innerMouthHull = hull(innerMouth, 1000);
+  drawShape(innerMouthHull);
+
+  let nosePath = [
+    ...annotations["noseBottom"],
+    ...annotations["noseTip"],
+    ...annotations["noseLeftCorner"],
+    ...annotations["midwayBetweenEyes"],
+    ...annotations["noseRightCorner"]
+  ];
+  let convexNosePath = hull(nosePath, 1000);
+  ctx.fillStyle = `#00F`;
+
+  drawShape(convexNosePath);
+
   return ctx;
 }
 module.exports = { paintFace };
+
+/*
+cheekStuff(){
+
+  let [x1, y1, z1] = annotations["leftCheek"][0];
+  [x2, y2, z2] = annotations["rightCheek"][0];
+  let cheekDistance = Math.sqrt(
+    Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2)
+  );
+
+  ctx.beginPath();
+  ctx.lineWidth = 0.5;
+  ctx.arc(x1, y1, cheekDistance * 0.05 , 0, 2 * Math.PI);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.lineWidth = 0.5;
+  ctx.arc(x2, y2, cheekDistance * 0.05 , 0, 2 * Math.PI);
+  ctx.fill();
+}*/
